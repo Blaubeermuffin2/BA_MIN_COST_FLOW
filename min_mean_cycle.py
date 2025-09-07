@@ -1,6 +1,12 @@
 import numpy as np
 
-def min_mean_cycle_karp(G):
+# G: graph as a dict of dicts
+# returns: minimum mean weigth, cycle path or (None, None) if no cycles
+def min_mean_cycle(G):
+    assert isinstance(G, dict), "Graph must be a dictionary of dictionaries."
+    assert all(isinstance(v, dict) for v in G.values()), "Graph must be a dictionary of dictionaries."
+
+    # Initialize distance and predecessor tables
     n = len(G)
     dists = np.full((n, n + 1), np.inf)
     preds = np.full((n, n + 1), None) 
@@ -11,6 +17,7 @@ def min_mean_cycle_karp(G):
     for k in range(1, n + 1):
         for u in G.keys():
             for v in G[u].keys():
+                # Relax edge (u,v) for step k
                 if dists[v][k] > dists[u][k - 1] + G[u][v]:
                     dists[v][k] = dists[u][k - 1] + G[u][v]
                     preds[v][k] = u
@@ -20,8 +27,7 @@ def min_mean_cycle_karp(G):
     cycle_vertex = None
     for v in range(n):
         for k in range(n):
-            if n - k == 0:
-                continue
+            # average weight of cycle
             mean = (dists[v][n] - dists[v][k]) / (n - k)
             if mean < min_mean:
                 min_mean = mean
@@ -55,7 +61,7 @@ if __name__ == "__main__":
         2: {3: 2},
         3: {1: 0, 0: 8}
     }
-    result, cycle_path = min_mean_cycle_karp(G)
+    result, cycle_path = min_mean_cycle(G)
     if result is not None and cycle_path:
         print(f"Minimum mean cycle weight: {result}")
         print(f"Cycle path: {cycle_path}")
