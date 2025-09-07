@@ -1,12 +1,15 @@
 import numpy as np
 import pandas as pd
 
-# G: dict
-# returns: new Graph with vertices renamed to 0,1,...,n-1 and the mapping dict
+# G: graph as a dict of dicts
+# returns: new Graph with vertices renamed to 0,1,...,n-1 and the corresponding mapping dict
 def rename_vertices(G):
+    # build mapping dict
     mapping = {}
-    for i, v in enumerate(G.keys()):
+    for i, v in enumerate(G.keys()): # enumerate gives (index i, value v)
         mapping[v] = i
+
+    # build new graph with renamed vertices according to mapping
     new_G = {}
     for v in G.keys():
         new_v = mapping[v]
@@ -14,14 +17,16 @@ def rename_vertices(G):
         for u in G[v].keys():
             new_u = mapping[u]
             new_G[new_v][new_u] = G[v][u]
+
     return new_G, mapping
 
-# G: dict
+# G: graph as a dict of dicts
 # s: index of start vertex (int)
 # returns: dists, preds
 def initialize(G,s):
     dists = np.array([])
     preds = np.array([])
+    # sets all distances to infinity and all predecessors to None
     for _ in range(len(G)):
         dists = np.append(dists, np.inf)
         preds = np.append(preds, None)
@@ -33,6 +38,7 @@ def initialize(G,s):
 # weight: weight of edge (u,v) (float)
 # dists: array of distances (np.array) 
 # preds: array of predecessors (np.array)
+#
 # relaxes edge (u,v) if possible
 def relax(u,v,weight,dists,preds):
     if dists[v] > dists[u] + weight:
@@ -59,15 +65,20 @@ def belfor(G,s):
             
     return dists, preds
 
+# preds: array of predecessors (np.array or list)
+# start: index of starting vertex (int)
+# end: index of destination vertex (int)
+# returns: list of vertices on shortest path from start to end (including start and end)
 def shortest_path(preds,start,end):
     assert isinstance(preds, (list, np.ndarray)), "Predecessors must be a list or numpy array."
     assert start in preds, "Starting vertex not in predecessors."
     assert end in preds, "Destination vertex not in predecessors."
-    
+
     current = end
     path = [end]
     # iteration counter to prevent infinte loop
     i = 0
+    # backtrack from end to start using predecessors
     while current != start:
         current = preds[current]
         path = path + [current]
@@ -75,7 +86,7 @@ def shortest_path(preds,start,end):
         if i > len(preds):
            raise Exception("Could not reach starting vertex from destination vertex. Check predecessors.")            
     
-    return path[::-1]
+    return path[::-1] # reverse path since we built it backwards
 
 if __name__ == "__main__":
     G = {
