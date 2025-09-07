@@ -21,21 +21,25 @@ def min_mean_cycle(G):
                 if dists[v][k] > dists[u][k - 1] + G[u][v]:
                     dists[v][k] = dists[u][k - 1] + G[u][v]
                     preds[v][k] = u
-
+    # If no cycle found
+    if dists[:, n].min() == np.inf:
+        return None, None
+    
     # Compute minimum mean cycle and store vertex
     min_mean = np.inf
     cycle_vertex = None
     for v in range(n):
+        curr_max = -np.inf
         for k in range(n):
+            if dists[v][k] == np.inf:
+                continue
             # average weight of cycle
             mean = (dists[v][n] - dists[v][k]) / (n - k)
-            if mean < min_mean:
-                min_mean = mean
-                cycle_vertex = v
-
-    # If no cycle found
-    if min_mean == np.inf or cycle_vertex == None:
-        return None, None
+            curr_max = max(curr_max, mean)
+        
+        if curr_max < min_mean:
+            min_mean = curr_max
+            cycle_vertex = v
 
     # Backtrack to find the cycle
     path = []
