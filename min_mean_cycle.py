@@ -47,3 +47,17 @@ def min_mean_cycle_karp(G):
 
     return min_mean, cycle_path[::-1] # reverse path since we built it backwards
 
+if __name__ == "__main__":
+    # Example graph
+    G = {
+        0: {2: 10, 1: 1},
+        1: {2: 3},
+        2: {3: 2},
+        3: {1: 0, 0: 8}
+    }
+    result, cycle_path = min_mean_cycle_karp(G)
+    if result is not None and cycle_path:
+        print(f"Minimum mean cycle weight: {result}")
+        print(f"Cycle path: {cycle_path}")
+    else:
+        print("No cycles in the graph.")
