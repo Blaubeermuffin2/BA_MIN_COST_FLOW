@@ -20,11 +20,11 @@ def rename_vertices(G):
 # s: index of start vertex (int)
 # returns: dists, preds
 def initialize(G,s):
-    dists = np.array()
-    preds = np.array()
+    dists = np.array([])
+    preds = np.array([])
     for _ in range(len(G)):
-        dists.append(np.inf)
-        preds.append(None)
+        dists = np.append(dists, np.inf)
+        preds = np.append(preds, None)
     dists[s] = 0
     return dists, preds
 
@@ -45,9 +45,11 @@ def relax(u,v,weight,dists,preds):
 # or None, None if negative cycle detected
 def belfor(G,s):
     dists, preds = initialize(G,s)
-    for u in G.keys():
-        for v in G[v].keys():
-            relax(u,v,G[u][v],dists,preds)
+    # relax all edges |V|-1 times
+    for _ in range(len(G)-1):
+        for u in G.keys():
+            for v in G[u].keys():
+                relax(u,v,G[u][v],dists,preds)
 
     # check for negative cycles
     for u in G.keys():
@@ -58,6 +60,10 @@ def belfor(G,s):
     return dists, preds
 
 def shortest_path(preds,start,end):
+    assert isinstance(preds, (list, np.ndarray)), "Predecessors must be a list or numpy array."
+    assert start in preds, "Starting vertex not in predecessors."
+    assert end in preds, "Destination vertex not in predecessors."
+    
     current = end
     path = [end]
     # iteration counter to prevent infinte loop
@@ -71,10 +77,16 @@ def shortest_path(preds,start,end):
     
     return path[::-1]
 
-G = {
-    0: {2: 2, 1: 2},   # 0→2 mit Kosten 2, 0→1 mit Kosten 2
-    1: {2: -5},        # 1→2 mit Kosten -5
-    2: {3: -5},        # 2→3 mit Kosten -5
-    3: {1: -5, 0: 2},  # 3→1 mit Kosten -5, 3→0 mit Kosten 2
-    4: {}              # 4 hat keine ausgehenden Kanten
-}
+if __name__ == "__main__":
+    G = {
+        0: {2: 2, 1: 2},   # 0→2 mit Kosten 2, 0→1 mit Kosten 2
+        1: {2: -1},        # 1→2 mit Kosten -1
+        2: {3: 3},        # 2→3 mit Kosten 3
+        3: {1: 5, 0: 2},  # 3→1 mit Kosten 5, 3→0 mit Kosten 2
+    }
+    start = 0
+
+    dists, preds = belfor(G,start)
+    print(f"Distanzen ausgehend von {start}: {dists}")
+    print(f"Kürzester Pfad von {start} nach 3:")
+    print(shortest_path(preds,0,3))
