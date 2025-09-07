@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 # G: graph as a dict of dicts
 # returns: new Graph with vertices renamed to 0,1,...,n-1 and the corresponding mapping dict
