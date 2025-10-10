@@ -21,57 +21,57 @@ def rename_vertices(G):
 
 # G: graph as a dict of dicts
 # s: index of start vertex (int)
-# returns: dists, preds
+# returns: distances, predecessors
 def initialize(G,s):
-    dists = np.array([])
-    preds = np.array([])
+    distances = np.array([])
+    predecessors = np.array([])
     # sets all distances to infinity and all predecessors to None
     for _ in range(len(G)):
-        dists = np.append(dists, np.inf)
-        preds = np.append(preds, None)
-    dists[s] = 0
-    return dists, preds
+        distances = np.append(distances, np.inf)
+        predecessors = np.append(predecessors, None)
+    distances[s] = 0
+    return distances, predecessors
 
 # u: index of vertex u (int)
 # v: index of vertex v (int)   
 # weight: weight of edge (u,v) (float)
-# dists: array of distances (np.array) 
-# preds: array of predecessors (np.array)
+# distances: array of distances (np.array) 
+# predecessors: array of predecessors (np.array)
 #
 # relaxes edge (u,v) if possible
-def relax(u,v,weight,dists,preds):
-    if dists[v] > dists[u] + weight:
-        dists[v] = dists[u] + weight
-        preds[v] = u
+def relax(u,v,weight,distances,predecessors):
+    if distances[v] > distances[u] + weight:
+        distances[v] = distances[u] + weight
+        predecessors[v] = u
 
 # G: graph as a dict of dicts
 # s: index of start vertex (int)
-# returns: distances, predecessors
+# returns: distances, predecessors as arrays
 # or None, None if negative cycle detected
 def belfor(G,s):
-    dists, preds = initialize(G,s)
+    distances, predecessors = initialize(G,s)
     # relax all edges |V|-1 times
     for _ in range(len(G)-1):
         for u in G.keys():
             for v in G[u].keys():
-                relax(u,v,G[u][v],dists,preds)
+                relax(u,v,G[u][v],distances,predecessors)
 
     # check for negative cycles
     for u in G.keys():
         for v in G[v].keys():
-            if dists[v] > dists[u] + G[u][v]:
+            if distances[v] > distances[u] + G[u][v]:
                 return None, None
             
-    return dists, preds
+    return distances, predecessors
 
-# preds: array of predecessors (np.array or list)
+# predecessors: array of predecessors (np.array or list)
 # start: index of starting vertex (int)
 # end: index of destination vertex (int)
 # returns: list of vertices on shortest path from start to end (including start and end)
-def shortest_path(preds,start,end):
-    assert isinstance(preds, (list, np.ndarray)), "Predecessors must be a list or numpy array."
-    assert start in preds, "Starting vertex not in predecessors."
-    assert end <= len(preds), "Destination vertex unreachable."
+def shortest_path(predecessors,start,end):
+    assert isinstance(predecessors, (list, np.ndarray)), "Predecessors must be a list or numpy array."
+    assert start in predecessors, "Starting vertex not in predecessors."
+    assert end <= len(predecessors), "Destination vertex unreachable."
 
     current = end
     path = [end]
@@ -79,10 +79,10 @@ def shortest_path(preds,start,end):
     i = 0
     # backtrack from end to start using predecessors
     while current != start:
-        current = preds[current]
+        current = predecessors[current]
         path = path + [current]
         i += 1
-        if i > len(preds):
+        if i > len(predecessors):
            raise Exception("Could not reach starting vertex from destination vertex. Check predecessors.")            
     
     return path[::-1] # reverse path since we built it backwards
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     }
     start = 0
 
-    dists, preds = belfor(G,start)
-    print(f"Distanzen ausgehend von {start}: {dists}")
+    distances, predecessors = belfor(G,start)
+    print(f"Distanzen ausgehend von {start}: {distances}")
     print(f"Kürzester Pfad von {start} nach 3:")
-    print(shortest_path(preds,0,3))
+    print(shortest_path(predecessors,0,3))

@@ -6,23 +6,23 @@ def min_mean_cycle(G):
     assert isinstance(G, dict), "Graph must be a dictionary of dictionaries."
     assert all(isinstance(v, dict) for v in G.values()), "Graph must be a dictionary of dictionaries."
 
-    # Initialize distance and predecessor tables
+    # Initialize distance and predecessor tables as 2D arrays
     n = len(G)
-    dists = np.full((n, n + 1), np.inf)
-    preds = np.full((n, n + 1), None) 
+    distances = np.full((n, n + 1), np.inf)
+    predecessors = np.full((n, n + 1), None) 
     for k in range(n):
-        dists[k][0] = 0
+        distances[k][0] = 0
 
     # Fill distance and predecessor tables
     for k in range(1, n + 1):
         for u in G.keys():
             for v in G[u].keys():
                 # Relax edge (u,v) for step k
-                if dists[v][k] > dists[u][k - 1] + G[u][v]:
-                    dists[v][k] = dists[u][k - 1] + G[u][v]
-                    preds[v][k] = u
+                if distances[v][k] > distances[u][k - 1] + G[u][v]:
+                    distances[v][k] = distances[u][k - 1] + G[u][v]
+                    predecessors[v][k] = u
     # If no cycle found
-    if dists[:, n].min() == np.inf:
+    if distances[:, n].min() == np.inf:
         return None, None
     
     # Compute minimum mean cycle and store vertex
@@ -31,10 +31,10 @@ def min_mean_cycle(G):
     for v in range(n):
         curr_max = -np.inf
         for k in range(n):
-            if dists[v][k] == np.inf:
+            if distances[v][k] == np.inf:
                 continue
             # average weight of cycle
-            mean = (dists[v][n] - dists[v][k]) / (n - k)
+            mean = (distances[v][n] - distances[v][k]) / (n - k)
             curr_max = max(curr_max, mean)
         
         if curr_max < min_mean:
@@ -49,7 +49,7 @@ def min_mean_cycle(G):
     while curr not in visited:
         path.append(curr)
         visited.add(curr)
-        curr = preds[curr][k]
+        curr = predecessors[curr][k]
         k -= 1
     # Zyklus extrahieren
     cycle_start = path.index(curr)
