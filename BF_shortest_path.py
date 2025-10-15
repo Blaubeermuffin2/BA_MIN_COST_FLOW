@@ -76,7 +76,9 @@ def belfor(G,s):
 def shortest_path(predecessors,start,end):
     assert isinstance(predecessors, (list, np.ndarray)), "Predecessors must be a list or numpy array."
     assert start in predecessors, "Starting vertex not in predecessors."
-    assert end <= len(predecessors), "Destination vertex unreachable."
+
+    if end > len(predecessors) or predecessors[end] is None:
+        return None # No path from start to end
 
     current = end
     path = [end]
