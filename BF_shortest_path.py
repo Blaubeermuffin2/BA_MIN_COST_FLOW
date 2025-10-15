@@ -38,14 +38,14 @@ def initialize(G,s):
 
 # u: index of vertex u (int)
 # v: index of vertex v (int)   
-# weight: weight of edge (u,v) (float)
+# cost: cost of edge (u,v) (float)
 # distances: array of distances (np.array) 
 # predecessors: array of predecessors (np.array)
 #
 # relaxes edge (u,v) if possible
-def relax(u, v, weight, distances, predecessors):
-    if distances[v] > distances[u] + weight:
-        distances[v] = distances[u] + weight
+def relax(u, v, cost, distances, predecessors):
+    if distances[v] > distances[u] + cost:
+        distances[v] = distances[u] + cost
         predecessors[v] = u
 
 # G: graph as a dict of dicts of dicts with 'capacity', 'cost', 'flow' as keys
@@ -59,12 +59,14 @@ def belfor(G,s):
     for _ in range(len(G)-1):
         for u in G.keys():
             for v in G[u].keys():
-                relax(u, v, G[u][v]['weight'], distances, predecessors)
+                relax(u, v, G[u][v]['cost'], distances, predecessors)
 
     # check for negative cycles
     for u in G.keys():
         for v in G[v].keys():
-            if distances[v] > distances[u] + G[u][v]['weight']:
+            if v not in G[u]:
+                continue
+            if distances[v] > distances[u] + G[u][v]['cost']:
                 return None, None
             
     return distances, predecessors
@@ -96,12 +98,12 @@ def shortest_path(predecessors,start,end):
 
 if __name__ == "__main__":
     G = {
-        0: {2: {'flow': 0, 'capacity': 0, 'weight': 2},   # 0→2 mit Kosten 2, Flow & Kapazität 0
-            1: {'flow': 0, 'capacity': 0, 'weight': 2}},  # 0→1 mit Kosten 2, Flow & Kapazität 0
-        1: {2: {'flow': 0, 'capacity': 0, 'weight': -1}}, # 1→2 mit Kosten -1, Flow & Kapazität 0
-        2: {3: {'flow': 0, 'capacity': 0, 'weight': 3}},  # 2→3 mit Kosten 3, Flow & Kapazität 0
-        3: {1: {'flow': 0, 'capacity': 0, 'weight': 5},   # 3→1 mit Kosten 5, Flow & Kapazität 0
-            0: {'flow': 0, 'capacity': 0, 'weight': 2}},  # 3→0 mit Kosten 2, Flow & Kapazität 0
+        0: {2: {'flow': 0, 'capacity': 0, 'cost': 2},   # 0→2 mit Kosten 2, Flow & Kapazität 0
+            1: {'flow': 0, 'capacity': 0, 'cost': 2}},  # 0→1 mit Kosten 2, Flow & Kapazität 0
+        1: {2: {'flow': 0, 'capacity': 0, 'cost': -1}}, # 1→2 mit Kosten -1, Flow & Kapazität 0
+        2: {3: {'flow': 0, 'capacity': 0, 'cost': 3}},  # 2→3 mit Kosten 3, Flow & Kapazität 0
+        3: {1: {'flow': 0, 'capacity': 0, 'cost': 5},   # 3→1 mit Kosten 5, Flow & Kapazität 0
+            0: {'flow': 0, 'capacity': 0, 'cost': 2}},  # 3→0 mit Kosten 2, Flow & Kapazität 0
     }
     start = 0
 

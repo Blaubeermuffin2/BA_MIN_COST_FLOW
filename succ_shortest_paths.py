@@ -50,9 +50,9 @@ def succ_shortest_paths(G, source, sink, target_flow):
             R[u][v]['flow'] = 0
     
     
-    flow_left = target_flow.copy()
+    flow_left = target_flow
 
-    while flow_left != 0:
+    while flow_left >= 0:
 
 
         # use Bellman-Ford to find shortest path from source to sink 
@@ -97,7 +97,17 @@ def succ_shortest_paths(G, source, sink, target_flow):
 
     return cost, edges_with_flow
 
+if __name__ == "__main__":
+    G = {
+        0: {1: {'flow': 0, 'capacity': 4, 'cost': 3},   # 0→2 mit Kosten 2, Flow & Kapazität 0
+            3: {'flow': 0, 'capacity': 1, 'cost': 2}},  # 0→1 mit Kosten 2, Flow & Kapazität 0
+        1: {2: {'flow': 0, 'capacity': 2, 'cost': 1},
+            3: {'flow': 0, 'capacity': 3, 'cost': 1}}, # 1→2 mit Kosten -1, Flow & Kapazität 0
 
+        3: {2: {'flow': 0, 'capacity': 3, 'cost': 1}},
+        2: {}}   # 3→1 mit Kosten 5, Flow & Kapazität 0
+            
+    cost, edges_with_flow = succ_shortest_paths(G, 0, 2, 4)
  
 
             
