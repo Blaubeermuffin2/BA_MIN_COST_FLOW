@@ -55,6 +55,7 @@ def succ_shortest_paths(G, source, sink, target_flow):
         _, predecessors = belfor(R, source)
         path = shortest_path(predecessors, source, sink)
         if path is None:
+            print("Network capacity depleted. Flow still remaining:", int(flow_left))
             break # No more augmenting paths
 
         # calculate minimal capaity of edges on path
